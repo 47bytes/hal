@@ -227,23 +227,24 @@ func (r Resource) GetMap() Entry {
 }
 
 func (r *Resource) getPayloadMap() Entry {
-
-	val := reflect.ValueOf(r.Payload)
 	payloadMap := Entry{}
+	if r.Payload != nil {
+		val := reflect.ValueOf(r.Payload)
 
-	for i := 0; i < val.NumField(); i++ {
+		for i := 0; i < val.NumField(); i++ {
 
-		typeField := val.Type().Field(i)
-		tag := typeField.Tag
-		tagValue := tag.Get("json")
-		if tagValue != "-" {
-			valueField := val.Field(i)
+			typeField := val.Type().Field(i)
+			tag := typeField.Tag
+			tagValue := tag.Get("json")
+			if tagValue != "-" {
+				valueField := val.Field(i)
 
-			if tagValue == "" {
-				tagValue = typeField.Name
+				if tagValue == "" {
+					tagValue = typeField.Name
+				}
+
+				payloadMap[tagValue] = valueField.Interface()
 			}
-
-			payloadMap[tagValue] = valueField.Interface()
 		}
 	}
 
